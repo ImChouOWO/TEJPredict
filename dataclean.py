@@ -9,7 +9,9 @@ def load_data():
 def data_clean(data:pd.DataFrame,drop_col:list):
 
     data = data.drop(columns=drop_col)
-
+    if '公司' in data.columns:
+        
+        data['公司'] = data['公司'].str.split().str[0]
 
     return data
 
@@ -37,8 +39,8 @@ def data_splite_by_year(data:pd.DataFrame):
     year_list = ["2013","2014","2015","2016","2017","2018","2019","2020","2021","2022"]
     
 
-    # for i,j in zip(grouped_by_year,year_list):
-    #    i.to_excel(f'dataset/cleanData/dataYear/data_{j}.xlsx')
+    for i,j in zip(grouped_by_year,year_list):
+       i.to_excel(f'dataset/cleanData/dataYear/data_{j}.xlsx',index=False)
 
     
 
