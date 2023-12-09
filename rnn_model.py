@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as plt
 import pandas as pd
+import os
 
 # 檢查 GPU 是否可用
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -43,48 +44,85 @@ class RNN(nn.Module):
         self.num_layers = num_layers
         self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
-
     def forward(self, x):
+        # 調整輸入數據的維度
+        x = x.unsqueeze(1)  # 如果原本的x是二維的，這將會添加一個時間步的維度
+
+        # 初始化隱藏狀態
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+
+        # 前向傳播
         out, _ = self.rnn(x, h0)
         out = self.fc(out[:, -1, :])
         return out
 
-# 超參數
-input_size = X_train.shape[1]
-hidden_size = 128
-num_layers = 2
-output_size = 1
-num_epochs = 30
-learning_rate = 0.001
 
-# 初始化模型
-model = RNN(input_size, hidden_size, num_layers, output_size).to(device)
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+def save_model(train_losses):
+        # 繪製訓練損失圖
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_losses, label='Training Loss')
+    plt.title('Training Loss Over Epochs')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.savefig("img\RNN_img\RNN_losses.png")
 
-# 訓練模型
-train_losses = []
-for epoch in range(num_epochs):
-    model.train()
-    running_loss = 0.0
-    for inputs, labels in train_loader:
-        inputs, labels = inputs.to(device), labels.to(device)
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs.squeeze(), labels)
-        loss.backward()
-        optimizer.step()
-        running_loss += loss.item()
-    epoch_loss = running_loss / len(train_loader)
-    train_losses.append(epoch_loss)
-    print(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
 
-# 繪製訓練損失圖
-plt.figure(figsize=(10, 6))
-plt.plot(train_losses, label='Training Loss')
-plt.title('Training Loss Over Epochs')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.legend()
-plt.show()
+
+
+if __name__ == "__main__":
+    # 超參數
+    input_size = X_train.shape[1]
+    hidden_size = 128
+    num_layers = 2
+    output_size = 1
+    num_epochs = 200000
+    learning_rate = 0.001
+    rollback_path = 'model/RNN_model/rollback/model.pth'
+    model_path = 'model\RNN_model\main_model\model.pth'
+
+    # 初始化模型
+    model = RNN(input_size, hidden_size, num_layers, output_size).to(device)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+    # 訓練模型
+    train_losses = []
+
+    mean_losses = []
+
+    if os.path.exists(model_path):
+        model.load_state_dict(torch.load(model_path))
+    else:
+        print("model not exit")
+    
+
+    for epoch in range(num_epochs):
+        model.train()
+        running_loss = 0.0
+        for inputs, labels in train_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs.squeeze(), labels)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+        epoch_loss = running_loss / len(train_loader)
+        train_losses.append(epoch_loss)
+        print(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
+
+        if epoch %100 == 0:
+            mean_losses.append(sum(train_losses)/len(train_losses))
+            train_losses=[]
+
+        if epoch% (num_epochs/10) == 0:
+            torch.save(model.state_dict(), rollback_path)
+            print("model has been saved")
+
+
+    torch.save(model.state_dict(),model_path)
+    save_model(mean_losses)
+    
+
+
