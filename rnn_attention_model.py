@@ -86,7 +86,7 @@ def save_model(train_losses):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig("img\RNN_img\RNN_losses.png")
+    plt.savefig("img\RNN_attention_img\RNN_attention_losses.png")
 
 if __name__ == "__main__":
     # 超參數
