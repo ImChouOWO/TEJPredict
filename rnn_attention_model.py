@@ -63,6 +63,7 @@ class RNN(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
+        
         x = x.unsqueeze(1)  # 添加時間步的維度
 
         # 初始化隱藏狀態
@@ -94,8 +95,8 @@ if __name__ == "__main__":
     hidden_size = 128
     num_layers = 2
     output_size = 1
-    num_epochs = 200000
-    learning_rate = 0.001
+    num_epochs = 20000
+    learning_rate = 0.001*10
     rollback_path = 'model/RNN_attention_model/rollback/model_with_attention.pth'
     model_path = 'model\RNN_attention_model\main_model\model_with_attention.pth'
 
@@ -128,7 +129,7 @@ if __name__ == "__main__":
         train_losses.append(epoch_loss)
         print(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
 
-        if epoch % 100 == 0:
+        if epoch % 1000 == 0:
             mean_losses.append(sum(train_losses)/len(train_losses))
             train_losses=[]
 

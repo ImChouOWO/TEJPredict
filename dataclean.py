@@ -28,23 +28,39 @@ def data_quartile(data: pd.DataFrame, metrics: list) -> pd.DataFrame:
         except ValueError as e:
             print(f"計算 {metric} 的四分位數時發生錯誤: {e}")
 
-    # data.to_excel("dataset/cleanData/dataClean.xlsx")
+    data.to_excel("dataset/cleanData/dataClean.xlsx",index=False)
     return data
 
-def data_splite_by_year(data:pd.DataFrame):
-   
-    data['年月'] =pd.to_datetime(data['年月'])
-    grouped_by_year = [group for _, group in data.groupby(data['年月'].dt.year)]
-   
-    year_list = ["2013","2014","2015","2016","2017","2018","2019","2020","2021","2022"]
-    
+def data_splite_by_year(data: pd.DataFrame):
+    data['年月'] = pd.to_datetime(data['年月'])
 
-    for i,j in zip(grouped_by_year,year_list):
-       i.to_excel(f'dataset/cleanData/dataYear/data_{j}.xlsx',index=False)
+    # 转换日期格式为数值型格式并相加
+    data['年月'] = data['年月'].dt.year * 10000 + data['年月'].dt.month * 100 + data['年月'].dt.day
 
-    
+    # 按年份分组
+    grouped_by_year = {year: group for year, group in data.groupby(data['年月'] // 10000)}
+
+    year_list = ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"]
+    combined_data_2013_2017 = []
+
+    for year in year_list:
+        year_data = grouped_by_year.get(int(year), pd.DataFrame())
+
+        # 将 2013 到 2017 年的数据添加到列表中
+        if year in ["2013", "2014", "2015", "2016", "2017"]:
+            combined_data_2013_2017.append(year_data)
+
+        # 将每年的数据保存为 Excel
+        # year_data=year_data.drop(columns="公司")
+        year_data.to_excel(f'dataset/cleanData/dataYear/data_{year}.xlsx', index=False)
+
+    # 将 2013 到 2017 年的组合数据合并并保存为一个 Excel
+    combined_data_2013_2017_df = pd.concat(combined_data_2013_2017)
+    combined_data_2013_2017_df.to_excel('dataset/cleanData/data_2013_to_2017.xlsx', index=False)
 
     return grouped_by_year
+
+
 
 
 if __name__ == "__main__":
