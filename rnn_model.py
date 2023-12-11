@@ -58,7 +58,7 @@ class RNN(nn.Module):
 
 
 def save_model(train_losses):
-        # 繪製訓練損失圖
+    # 繪製訓練損失圖
     plt.figure(figsize=(10, 6))
     plt.plot(train_losses, label='Training Loss')
     plt.title('Training Loss Over Epochs')
@@ -76,8 +76,8 @@ if __name__ == "__main__":
     hidden_size = 128
     num_layers = 2
     output_size = 1
-    num_epochs = 200000
-    learning_rate = 0.001
+    num_epochs = 40000
+    learning_rate = 0.001*10
     rollback_path = 'model/RNN_model/rollback/model.pth'
     model_path = 'model\RNN_model\main_model\model.pth'
 
