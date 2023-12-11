@@ -9,7 +9,7 @@ def data_preprocess(data_year:str):
     data.to_excel(f"classifier/outputData/preprocessData/data_{data_year}.xlsx",index=False)
     return data
 
-def data_combine(data:pd.DataFrame):
+def data_combine(data:pd.DataFrame,data_year:str):
     print(data)
 if __name__ =="__main__":
     for i in ["2013","2014","2015","2016","2017","2018","2019","2020","2021","2022"]:
