@@ -98,12 +98,13 @@ def transform_datetime_features(df):
             df[col] = total_date_value
     print(df.columns)
     return df
-def save_predict(data:list):
+def save_predict(data:list,year):
     return_data = []
     for i in data:
         return_data.append(float(i[0]))
     df = pd.DataFrame({"預期 稅後淨利成長率":return_data})
     print(df)
+    df.to_excel(f"predict/predictData/predict_{year}.xlsx")
 
 
 if __name__ == "__main__":
@@ -127,24 +128,25 @@ if __name__ == "__main__":
     # print(features.columns)
 
 
+    for i in ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022"]:
 
 
-    # 加載要進行預測的新數據
-    predict_data = pd.read_excel("dataset\cleanData\dataYear\data_2022.xlsx")
-    # print(predict_data.columns)
+        # 加載要進行預測的新數據
+        predict_data = pd.read_excel(f"dataset\cleanData\dataYear\data_{i}.xlsx")
+        # print(predict_data.columns)
 
-    
+        
 
-    # 轉換 datetime64 數據
+        # 轉換 datetime64 數據
 
-    predict_data = transform_datetime_features(predict_data)
-    # 從新數據中提取特徵
-    predict_features = predict_data.drop(columns=['稅後淨利成長率'], errors='ignore')
-    print("predict_features: ",predict_features.shape)
-    # 確保特徵順序與訓練時一致
-    predict_features = predict_features[features.columns]
+        predict_data = transform_datetime_features(predict_data)
+        # 從新數據中提取特徵
+        predict_features = predict_data.drop(columns=['稅後淨利成長率'], errors='ignore')
+        print("predict_features: ",predict_features.shape)
+        # 確保特徵順序與訓練時一致
+        predict_features = predict_features[features.columns]
 
-    # 進行預測
-    predictions = predict(model, predict_features, scaler)
-    
-    save_predict(predictions)
+        # 進行預測
+        predictions = predict(model, predict_features, scaler)
+        
+        save_predict(predictions,i)
