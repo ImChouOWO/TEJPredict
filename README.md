@@ -1,6 +1,6 @@
 ﻿# TEJPredict
 
-Using TEJ data set to predict Net profit margin growth rate by RNN and Attention analysis
+Using TEJ dataset to predict Net profit margin growth rate by RNN and Attention analysis
 
 # set up
 
