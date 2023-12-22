@@ -6,16 +6,24 @@ def load_data():
     data = pd.read_excel(origin_data_path)
     return data
 
-def data_clean(data:pd.DataFrame,drop_col:list):
+def data_clean(data:pd.DataFrame,drop_col:list)->pd.DataFrame:
 
     data = data.drop(columns=drop_col)
+
+    
+
+    nameID = pd.DataFrame({"ID":[],"公司名":[]})
     if '公司' in data.columns:
-        
+        nameID['ID'] = data['公司'].str.split().str[0]
+        nameID['公司名'] = data['公司'].str.split().str[1]
+        nameID.to_excel("dataset/cleanData/nameID.xlsx",index=False)
         data['公司'] = data['公司'].str.split().str[0]
+
+
 
     return data
 
-def data_quartile(data: pd.DataFrame, metrics: list) -> pd.DataFrame:
+def data_quartile(data: pd.DataFrame, metrics: list):
     # 將指定指標的空值以該年份的平均值替代
     for metric in metrics:
         data[metric] = data.groupby(data['年月'].dt.year)[metric].transform(lambda x: x.fillna(x.mean()))
@@ -47,7 +55,7 @@ def data_splite_by_year(data: pd.DataFrame):
         year_data = grouped_by_year.get(int(year), pd.DataFrame())
 
         # 将 2013 到 2017 年的数据添加到列表中
-        if year in ["2013", "2014", "2015", "2016", "2017"]:
+        if year in ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021"]:
             combined_data_2013_2017.append(year_data)
 
         # 将每年的数据保存为 Excel
@@ -56,7 +64,7 @@ def data_splite_by_year(data: pd.DataFrame):
 
     # 将 2013 到 2017 年的组合数据合并并保存为一个 Excel
     combined_data_2013_2017_df = pd.concat(combined_data_2013_2017)
-    combined_data_2013_2017_df.to_excel('dataset/cleanData/data_2013_to_2017.xlsx', index=False)
+    combined_data_2013_2017_df.to_excel('dataset/cleanData/dataCombine.xlsx', index=False)
 
     return grouped_by_year
 

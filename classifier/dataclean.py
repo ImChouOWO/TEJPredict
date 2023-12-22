@@ -6,6 +6,7 @@ def data_preprocess(data_year:str):
     data['ROE'] = data['稅前淨利']/(data['資產總額']-data['負債總額'])
     data['ROA'] = data["稅前淨利"]/data['資產總額']
     data=data.drop(columns="年月")
+    
     data_combine(data = data, data_year = data_year)
     return data
 
