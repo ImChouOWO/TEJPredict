@@ -1,6 +1,6 @@
 ﻿# TEJPredict
 
-Using TEJ data set to predict Net profit margin growth rate by RNN add Attention analysis
+Using TEJ dataset to predict Net profit margin growth rate by RNN and Attention analysis
 
 # set up
 
@@ -12,10 +12,22 @@ pip install sklearn
 pip install pandas
 ```
 #### If you want to see the complete code and test the script, you can run the code below
+
+##### training's scrpit ( TEJPredict/trainModel )
 ```
-cd predict
+python3  rnn_attention_model.py
+python3 rnn_model.py
+```
+
+##### predict's scrpit ( TEJPredict/predict )
+```
 python3 RNN_attention_predict.py
 python3 RNN_predict.py
+```
+
+##### classifier's scrpit ( TEJPredict/classifier )
+```
+python3 k-means.py
 ```
 
 ### Experimental details
@@ -36,6 +48,13 @@ python3 RNN_predict.py
 ![RNN+Attention(220000 epochs)](https://github.com/ImChouOWO/TEJPredict/blob/main/img/RNN_attention_img/RNN_attention_losses_80000.png)
 
 
-#### TO DO List
-- [ ] Classifier  
+#### classified
+
+#### top 10 in terms of frequency in dataset of top 20% 
+![top](https://github.com/ImChouOWO/TEJPredict/blob/main/classifier/outputData/output/img/Top%2010%20company.png)
+
+#### bottom 10 in terms of frequency in dataset of bottom 20% 
+![top](https://github.com/ImChouOWO/TEJPredict/blob/main/classifier/outputData/output/img/Bottom%2010%20company.png)
+
+
 
